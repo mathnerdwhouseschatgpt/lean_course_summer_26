@@ -14,20 +14,6 @@ theorem exercise0 {d k n : ℕ} (hd : d ≠ 0) (hk : k > 1) (h : n = d * k) : d 
   refine (Nat.lt_mul_iff_one_lt_right ?_).mpr hk
   exact Nat.zero_lt_of_ne_zero hd
 
-/-I'm not sure if I was supposed to use these facts from the library.
-The only other way I can think of to do this involves using induction with a non-zero base case.
-I will include that proof below.-/
-
-theorem exercise0proof2 {d k n : ℕ} (hd : d ≠ 0) (hk : k > 1) (h : n = d * k) : d < n := by
-  sorry
-
-theorem exercise1 {d n : ℕ} (hd : d ≠ 1) (h : d ∣ n) : ¬ (d ∣ n + 1):= by
-  by_contra
-  rcases h with ⟨k, hk⟩
-  rcases this with ⟨l, hl⟩
-  rw[hk] at hl
-  sorry
-
 lemma lemma1 {d n : ℕ} (hn : n ≠ 0) (hd : d ∣ n) : d ≤ n := by
   rcases hd with ⟨k, hk⟩
   rw[hk]
@@ -39,6 +25,27 @@ lemma lemma1 {d n : ℕ} (hn : n ≠ 0) (hd : d ∣ n) : d ≤ n := by
   refine Nat.le_mul_of_pos_right d ?_
   have hr := h.right
   exact Nat.zero_lt_of_ne_zero hr
+
+theorem exercise1 {d n : ℕ} (hd : d ≠ 1) (h : d ∣ n) : ¬ (d ∣ n + 1):= by
+  by_contra
+  rcases h with ⟨k, hk⟩
+  rcases this with ⟨l, hl⟩
+  rw[hk] at hl
+  have h : d ≤ 1 := by
+    apply lemma1
+    · trivial
+    apply Nat.eq_sub_of_add_eq' at hl
+    rw[←Nat.mul_sub] at hl
+    use(l-k)
+  rcases d with c | hc
+  · rw[Nat.zero_mul,Nat.zero_mul] at hl
+    trivial
+  rw[Nat.add_comm] at h
+  apply Nat.le_sub_of_add_le' at h
+  rw[Nat.sub_self] at h
+  apply Nat.le_zero.mp at h
+  rw[h] at hd
+  trivial
 
 theorem infinitely_many_primes : ∀ n : ℕ, ∃ p : ℕ, p.Prime ∧ p > n := by
   intro n
@@ -112,20 +119,17 @@ theorem infinitely_many_primes : ∀ n : ℕ, ∃ p : ℕ, p.Prime ∧ p > n := 
   contrapose h3
   apply Nat.lt_of_not_le at h3
   exact Finset.mem_range.mpr h3
-
-
-
 /-Transparency: During this proof, I had ChatGPT help me learn the syntax required for this line 34 and 35.
 I also used it to remind me how to split \and using rcases. I also used it for some other syntax and stuff.
 The proof is based on Euclid's approach. The rest was all apply? exact?!
-I tried to avoid using ChatGPT too much, and I think I did a pretty good job (I only used it when I was really confused).-/
+I tried to avoid using ChatGPT too much, and I think I did a pretty good job (I only used it when I was really confused for troubleshooting help).-/
 end
 
 section -- Finsets
 
 #check Finset ℕ -- the type of finite subsets of ℕ
 
-variable {α : Type} [DecidableEq α] -- we need to be able to decide equality of elements
+variable {α : Type} -- we need to be able to decide equality of elements
 
 #check Finset α -- the type of finite sets formed by terms of type α
 
@@ -143,7 +147,14 @@ variable {I : Finset α} {f : α → ℕ}
 
 -- Use what we learned to prove the following theorem.
 theorem exercise3 (d : ℕ) (h : ∀ x, d ∣ f x) : d ∣ ∑ i ∈ I, f i := by
-  sorry
+  have h1 : ∃g : α → ℕ,∀ x, d*(g x) = f x := by
+    use fun x ↦ (f x)/d
+    intro x
+    exact Nat.mul_div_cancel' (h x)
+  rcases h1 with ⟨g, hg⟩
+  use ∑ i ∈ I, g i
+  rw[Finset.mul_sum]
+  exact Eq.symm (Finset.sum_congr rfl fun x a ↦ hg x)
 end
 
 /-
