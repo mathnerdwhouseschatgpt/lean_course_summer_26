@@ -149,7 +149,7 @@ variable {I : Finset α} {f : α → ℕ}
 theorem exercise3_induction_proof (d : ℕ) (h : ∀ x, d ∣ f x) : d ∣ ∑ i ∈ I, f i := by
   classical
   induction I using Finset.induction_on with
-  | empty => simp
+  | empty => simp only [Finset.sum_empty, dvd_zero]
   | @insert a s z r =>
     rw[Finset.sum_insert]
     · exact (Nat.dvd_add_iff_right (h a)).mp r
@@ -211,7 +211,7 @@ theorem fundamental_theorem_of_arithmetic_part_1 (n : ℕ) (h : n > 1) : ∃S �
             exact Finset.mem_range.mpr h
           exact hp.1
         use fun a ↦ 1
-        simp
+        simp only [Finset.univ_unique, pow_one, Finset.prod_singleton, Finset.default_singleton]
         exact h3
       rcases hp.right with ⟨m,hm⟩
       have h : m < n := by
@@ -231,9 +231,7 @@ theorem fundamental_theorem_of_arithmetic_part_1 (n : ℕ) (h : n > 1) : ∃S �
       have h2 : n - 1 = k' + Nat.succ 1 := by
         exact Nat.pred_eq_succ_iff.mpr hk
       apply h1 at h2
-      sorry
-    sorry
-  sorry
+      sorry -- this proof is not complete but it is a partial argument.
 
 theorem fundamental_theorem_of_arithmetic_part_2 (S1 S2 : Finset ℕ) (f : S1 → ℕ) (g : ℕ → ℕ) (n : ℕ) : S1 ⊆ (Finset.range (n+1)).filter Nat.Prime ∧ S2 ⊆ (Finset.range (n+1)).filter Nat.Prime ∧ n = ∏ i : S1, i.val^(f i) ∧ n = ∏ i : S2, i.val^(g i)→ S1 = S2 ∧ ∀ i : S1, f i = g i.val := by
   sorry
