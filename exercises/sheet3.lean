@@ -45,13 +45,29 @@ theorem exercise2 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hqn : q ∣ n) : 
     by_cases h1 : p = q
     · left
       exact h1
+    by_cases h2 : n = 0
+    · right
+      simp only [h2, divMaxPow_zero_left, dvd_zero]
     right
-    rcases hqn with ⟨k,hk⟩
-    rw[hk]
-    have h2 : q ≠ 0 := by
-      exact Nat.Prime.ne_zero hq
-    rw[divMaxPow_base_mul h2 k]
-  sorry
+    rcases h with ⟨k,hk⟩
+    have h2 : padicValNat q k = padicValNat q n := by
+      have h3 : q^padicValNat q n ∣ n := pow_padicValNat_dvd
+      nth_rw 2[hk] at h3
+      apply Nat.dvd_mul.mp at h3
+      rcases h3 with ⟨k1,hk1⟩
+      rcases hk1 with ⟨k2,hk1⟩
+      have h3 : padicValNat q n ≠ 0 := by
+        refine (dvd_iff_padicValNat_ne_zero h2).mp hqn
+        exact { out := hq }
+      have hk2 : q ∣ k1 ∨ q ∣ k2 := by
+        refine Nat.Prime.dvd_or_dvd hq ?_
+        use q^(padicValNat q n-1)
+        nth_rw 1[←pow_one q]
+        rw[←pow_add q 1 ((padicValNat q n) - 1),add_comm,Nat.sub_add_cancel]
+        exact hk1.2.2
+      
+
+
 /-
 Lecture lemma 3: the chosen prime no longer divides the remainder.  The
 nonzero hypothesis is necessary: every natural number divides zero.
@@ -87,9 +103,7 @@ is the largest power of p that divides n.
 
 #check pow_dvd_iff_le_padicValNat
 
-theorem exercise4 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
-    (hn : n ≠ 0) :
-    primeExponent n p = primeExponent (remainder n q) p := by
+theorem exercise4 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) (hn : n ≠ 0) : primeExponent n p = primeExponent (remainder n q) p := by
   sorry
 
 /-!
@@ -165,5 +179,5 @@ theorem exercise6 {n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0) : n.factorization.su
   · left
     exact mem_primeFactors.mpr ⟨h.1, ⟨h1, hn⟩⟩
   right
-  exact mem_primeFactors.mpr ⟨h.1, ⟨h2, hm⟩⟩
+  exact mem_primeFactors.mpr ⟨h.1, ⟨h2, hm⟩⟩+
 end Sheet3
