@@ -148,7 +148,7 @@ is the largest power of p that divides n.
 
 #check pow_dvd_iff_le_padicValNat
 
-theorem exercise4 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) -- (hn : n ≠ 0) was unneccesary (I already proved this exercise as an intermediate step of my proof of Exercise 2) : primeExponent n p = primeExponent (remainder n q) p := by
+theorem exercise4 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) : primeExponent n p = primeExponent (remainder n q) p := by -- (hn : n ≠ 0) was unneccesary (I already proved this exercise as an intermediate step of my proof of Exercise 2)
   simp only [fst_maxPowDvdDiv, snd_maxPowDvdDiv]
   have h3 : n.divMaxPow q = n/(q^padicValNat q n) := by
     refine Nat.eq_div_of_mul_eq_right ?_ ?_
