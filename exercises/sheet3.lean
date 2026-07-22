@@ -39,28 +39,22 @@ Lecture lemma 2: after removing the largest power of `q`, every prime divisor of
 `q ∣ n` is the arithmetic content of saying that `q` lies in the support of
 the prime factorization of `n`.
 -/
+lemma stuff (p k l : ℕ) : (l*k).divMaxPow p = l.divMaxPow p * k.divMaxPow p := by
+  have h1 := product_of_primeExponent (l*k) p
+  have h2 := product_of_primeExponent l p
+  have h3 := product_of_primeExponent k p
+  nth_rw 1[h2,h3] at h1
+  rw[←mul_assoc,mul_comm] at h1
+  nth_rw 2 [mul_comm,←mul_assoc] at h1
+  rw[←pow_add p l k]
 theorem exercise2 {p q n : ℕ} (hp : p.Prime) (hq : q.Prime) (hqn : q ∣ n) : p ∣ n ↔ p = q ∨ p ∣ n.divMaxPow q := by
   constructor
   · intro h
     by_cases h1 : p = q
     · left
       exact h1
-    by_cases h2 : n = 0
-    · right
-      simp only [h2, divMaxPow_zero_left, dvd_zero]
     right
-    rcases h with ⟨k,hk⟩
-    have h2 : padicValNat q k = padicValNat q n := by
-      have h3 : q^padicValNat q n ∣ n := pow_padicValNat_dvd
-      nth_rw 2[hk] at h3
-      apply Nat.dvd_mul.mp at h3
-      rcases h3 with ⟨k1,hk1⟩
-      rcases hk1 with ⟨k2,hk1⟩
-      have h4 : padicValNat q (k1*k2) = padicValNat q n := by
-        rw[hk1.2.2]
-        exact padicValNat_base_pow (Prime.one_lt hq) (padicValNat q n)
-      rw[←h4]
-    rw[hk]
+
 /-
 Lecture lemma 3: the chosen prime no longer divides the remainder.  The
 nonzero hypothesis is necessary: every natural number divides zero.
